@@ -26,7 +26,6 @@
     "eslint-config-prettier": "^6.11.0",
     "express": "^4.17.1",
     "express-bearer-token": "^2.4.0",
-    "express-error-slack": "^2.0.0",
     "helmet": "^3.23.3",
     "joi": "^17.2.1",
     "jsonwebtoken": "^8.5.1",

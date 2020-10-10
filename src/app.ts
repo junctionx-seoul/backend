@@ -1,5 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import fs from 'fs';
 
 import helmet from 'helmet';
 import cors from 'cors';
@@ -42,12 +43,19 @@ class App {
 
   // eslint-disable-next-line class-methods-use-this
   private connectMongoDB() {
+    const certFileBuf = fs.readFileSync(
+      'src/credentials/rds-combined-ca-bundle.pem',
+    );
+
     const mongooseOption = {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useCreateIndex: true,
+      ssl: true,
+      sslValidate: false,
+      sslCA: certFileBuf,
     };
-    console.log(process.env.MONGO_URL);
+    // @ts-ignore
     mongoose
       .connect(process.env.MONGO_URL || '', mongooseOption)
       .then(() => console.log('connected'))

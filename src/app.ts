@@ -4,8 +4,7 @@ import mongoose from 'mongoose';
 import helmet from 'helmet';
 import cors from 'cors';
 import bearerToken from 'express-bearer-token';
-// @ts-ignored
-import errorToSlack from 'express-error-slack';
+
 import { errorHandler } from './middlewares';
 
 import RootRouter from './routes';
@@ -48,11 +47,11 @@ class App {
       useUnifiedTopology: true,
       useCreateIndex: true,
     };
-
-    mongoose.connect(
-      `mongodb://localhost:27017/test?readPreference=primary&appname=MongoDB%20Compass&ssl=false`,
-      mongooseOption,
-    );
+    console.log(process.env.MONGO_URL);
+    mongoose
+      .connect(process.env.MONGO_URL || '', mongooseOption)
+      .then(() => console.log('connected'))
+      .catch((err) => console.log(err));
   }
 
   private initializeRouter() {
@@ -66,11 +65,6 @@ class App {
   }
 
   private initialErrorHandler() {
-    this.app.use(
-      errorToSlack({
-        webhookUri: process.env.SLACK_WEBHOOK_URI,
-      }),
-    );
     this.app.use(errorHandler);
   }
 }

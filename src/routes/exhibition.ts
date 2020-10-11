@@ -3,6 +3,7 @@ import Joi from 'joi';
 import { validator } from '../middlewares';
 
 import ExhibitionController from '../controllers/exhibition';
+import LogController from '../controllers/log';
 
 const router = Router();
 
@@ -17,6 +18,8 @@ router.get('/mine', ExhibitionController.getMyExhibitions);
 router.get('/recommend', ExhibitionController.getRecommendExhibitions);
 
 router.get('/hashtag', ExhibitionController.getRecommendExhibitionsByHashtag);
+
+router.get('/log', LogController.getExhibitionsViewLogs);
 
 router.post(
   '/new',

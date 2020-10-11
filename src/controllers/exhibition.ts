@@ -4,6 +4,8 @@ import { pieceModel as PieceModel } from '../models/piece';
 import { getUserInfoByToken } from '../resources/auth';
 import { HttpException } from '../exceptions';
 import { reviewModel } from '../models/review';
+import { viewlogModel as ViewLogModel } from '../models/viewlog';
+import { userModel as UserModel } from '../models';
 
 export default {
   getAllExhibitions: async (
@@ -96,6 +98,7 @@ export default {
         $or: [
           { title: { $regex: String(req.query.keyword), $options: 'i' } },
           { description: { $regex: String(req.query.keyword), $options: 'i' } },
+          { tag: { $regex: String(req.query.keyword), $options: 'i' } },
         ],
       }).sort({
         createdAt: 'desc',
@@ -112,6 +115,9 @@ export default {
         return next(
           new HttpException(405, '조회할 전시회 아이디와 함께 요청해주세요.'),
         );
+      const user = await getUserInfoByToken(String(req.token));
+      if (!user)
+        return next(new HttpException(401, '로그인 이후 이용해주세요.'));
       const exhibition = await ExhibitionModel.findById(id);
       if (!exhibition)
         return next(
@@ -132,7 +138,22 @@ export default {
           return piece;
         }),
       );
-      res.status(200).json({ exhibition, piece: pieceData });
+      const viewLogs = await ViewLogModel.find({ exhibition: String(id) }).sort(
+        {
+          createdAt: 'desc',
+        },
+      );
+      const viewLogData = await Promise.all(
+        viewLogs.map(async (log) => {
+          const userData = await UserModel.findById(log.viewBy);
+          return userData;
+        }),
+      );
+      const viewLog = new ViewLogModel({ viewBy: user._id, exhibition: id });
+      await viewLog.save();
+      res
+        .status(200)
+        .json({ exhibition, piece: pieceData, viewlogs: viewLogData });
     } catch (err) {
       next(err);
     }

@@ -1,4 +1,4 @@
-import { Router, Response } from 'express';
+import { Router } from 'express';
 import Joi from 'joi';
 import { validator } from '../middlewares';
 
@@ -23,6 +23,7 @@ router.post(
     Joi.object({
       username: Joi.string().required(),
       password: Joi.string().required(),
+      zepetoCode: Joi.string().required(),
       name: Joi.string().required(),
       birth: Joi.string().required(),
       gender: Joi.string().required(),
@@ -52,6 +53,7 @@ router.post(
       name: Joi.string(),
       birth: Joi.string(),
       gender: Joi.string(),
+      zepetoCode: Joi.string(),
       hashtag: Joi.array(),
     }),
   ),

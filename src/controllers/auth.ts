@@ -33,7 +33,7 @@ export default {
   },
   register: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { username, password, name, birth, gender } = req.body;
+      const { username, password, name, birth, gender, zepetoCode } = req.body;
       const usernameVerify = await UserModel.find({ username });
       if (usernameVerify.length > 0)
         return next(
@@ -48,6 +48,7 @@ export default {
         name,
         birth,
         gender,
+        zepetoCode,
       });
       await user.save();
       res.status(200).json(user);
